@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="woongs">
+	<select id="login" parameterType="com.woongjin.woongs.model.UserDto" resultType="com.woongjin.woongs.model.UserDto">
+		select * from user_test where user_id = #{user_id} and user_password= #{user_password}
+	</select>
+
+	<select id="tags" resultType="com.woongjin.woongs.model.TagDto">
+		select no, name from tag
+	</select>
+	
+	<select id="subtags" resultType="map" parameterType="int">
+		select * from sub_tag where tag_no = #{no}
+	</select>
+
+	<insert id="insertPost" parameterType="com.woongjin.woongs.model.PostDto">
+		insert into post(user_id, category_first, category_second, thumbnail, title, description, price, worktime, retouch_count, service_description, requirement) 
+		values(#{user_id}, #{category_first}, #{category_second}, #{thumbnail}, #{title}, #{description}, #{price}, #{worktime}, #{retouch_count}, #{service_description}, #{requirement})
+	</insert>
+	
+	<select id="selectPost" resultType="com.woongjin.woongs.model.PostDto">
+		select * from post
+	</select>
+	
+	<insert id="issueCoupon" parameterType="com.woongjin.woongs.model.CouponDto">
+		insert into coupon(admin_id, coupon_code, coupon_name, coupon_price,coupon_reg_date , coupon_validate_date, coupon_for_everyone) 
+		values(#{admin_id}, #{coupon_code}, #{coupon_name}, #{coupon_price}, #{coupon_reg_date }, #{coupon_validate_date}, #{coupon_for_everyone})
+	</insert>
+	
+	<select id="selectCoupon" resultType="com.woongjin.woongs.model.CouponDto">
+		select * from coupon
+	</select>
+	
+	<select id="selectCouponByCode" parameterType="String" resultType="String">
+		select * from coupon where coupon_code = #{coupon_code} 
+	</select>
+	
+	<select id="selectUserCoupon" parameterType="String" resultType="com.woongjin.woongs.model.CouponDto">
+		select coupon_name, coupon_price, coupon_validate_date from coupon ,coupon_management 
+		where coupon.no = coupon_management.coupon_no and coupon_management.user_id=#{user_id}
+	</select>
+	
+	<insert id="enrollCoupon" parameterType="map">
+		insert into coupon_management(user_id, coupon_no) values(#{user_id}, #{coupon_no}) 
+	</insert>
+	
+	<delete id="deleteCoupon" parameterType="int">
+		delete from coupon where no = #{no}
+	</delete>
+	
+	<update id="updateCouponCount" parameterType="String">
+		update coupon set coupon_for_everyone= coupon_for_everyone - 1 where no =#{coupon_no}
+	</update>
+	
+	<select id="isAvailableCoupon" parameterType="map" resultType="int">
+		select count(*) from coupon_management where user_id=#{user_id} and coupon_no = #{coupon_no}
+	</select>
+	
+	<select id="isAvailableCouponCode" parameterType="String" resultType="int">
+		select coupon_for_everyone from coupon where coupon_code = #{coupon_code}
+	</select>
+	
+	
+</mapper>
